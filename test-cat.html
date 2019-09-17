@@ -1,0 +1,204 @@
+<!doctype html>
+<title>Hello World</title>
+<script src="https://pixijs.download/v4.5.5/pixi.min.js"></script>
+<style>
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+  }
+</style>
+
+<div id="px-render"></div>
+
+<script type="text/javascript">
+  let type = "WebGL"
+  if (!PIXI.utils.isWebGLSupported()) {
+    type = "canvas"
+  }
+  PIXI.utils.sayHello(type)
+
+  // 创建一个 Pixi应用 需要的一些参数
+  let option = {
+    width: 256, // default: 800
+    height: 256, // default: 600
+    antialias: true, // default: false
+    transparent: false, // default: false
+    resolution: 1 // default: 1
+  }
+  // 画布
+  //Create a Pixi Application 创建一个 Pixi应用
+  let app = new PIXI.Application(option);
+
+  let playground = document.getElementById('px-render');
+  // 获取渲染器
+  let renderer = app.renderer;
+
+  // 舞台（一个容器），这里面包括了图片精灵、置换图精灵
+  var stage;
+
+  // 设置 app.renderer对象的backgroundColor属性为一个任何的十六进制颜色
+  renderer.backgroundColor = 0x061639;
+
+  // 自定义宽高
+  // let autoW = 300;
+  // let autoH = 300;
+  // app.renderer.autoResize = true;
+  // renderer.resize(autoW, autoH);
+
+  // canvas占据整个窗口
+  renderer.view.style.position = "absolute";
+  renderer.view.style.display = "block";
+  renderer.autoResize = true;
+  renderer.resize(window.innerWidth, window.innerHeight);
+
+  //Add the canvas that Pixi automatically created for you to the HTML document
+  // renderer.view 是 Pixi 创建的一个canvas
+  // 把 Pixi 创建的 canvas 添加到页面上
+  playground.appendChild(renderer.view);
+
+  //舞台
+  // app.stage
+
+  //load an image and run the `setup` function when it's done
+  PIXI.loader
+    // add(name, url, optionObject, callbackFunction)
+    .add(['https://www.kkkk1000.com/images/learnPixiJS/cat.png',
+      'https://www.kkkk1000.com/images/learnPixiJS/sprite.png'
+    ])
+    .add('catImg', 'https://www.kkkk1000.com/images/learnPixiJS/cat.png')
+    .add('imgAll', 'http://static.bookstack.cn/projects/LearningPixi/examples/images/screenshots/09.png')
+    // .add({
+    //     url: 'https://www.sony-xperia.com.tw/xz2/asset/img/mask.jpg?9bb09275d7227f070ae43d439a395056',
+    //     crossOrigin: true
+    // })
+    .on("progress", loadProgressHandler)
+    .load(setup);
+  let cat, state
+  //This `setup` function will run when the image has loaded
+  function setup() {
+    console.log("All files loaded");
+    //Create the cat sprite
+    cat = new PIXI.Sprite(PIXI.loader.resources.catImg.texture);
+    //Change the sprite's position
+    // cat.x = 96;
+    // cat.y = 96;
+    cat.position.set(500, 200)
+    //Change the sprite's size
+    // cat.width = 80;
+    // cat.height = 120;
+    //Change the sprite's scale
+    cat.scale.x = 2;
+    cat.scale.y = 2;
+    // cat.scale.set(0.5, 0.5);
+    // 角度 圆心
+    // anchor改变了精灵纹理的图像原点，用0到1的数据来填充。
+    // pivot则改变了精灵的原点，用像素的值来填充。
+    // cat.rotation = 0.5;
+    // cat.anchor.x = 0.5;
+    // cat.anchor.y = 0.5;
+    // cat.anchor.set(.2, .8)
+    // cat.pivot.set(32, 32)
+    // 设置为0表示精灵静止。
+    cat.vx = 0;
+    cat.vy = 0;
+
+    //Add the cat to the stage
+    app.stage.addChild(cat);
+    //Set the game state
+    state = play;
+    //Start the game loop
+    // app.ticker.add(delta => gameLoop(delta));
+    app.ticker.add(delta => gameLoopTest(delta));
+
+    //雪碧图
+    //Create the `tileset` sprite from the texture
+    let texture = PIXI.utils.TextureCache[
+      "http://static.bookstack.cn/projects/LearningPixi/examples/images/screenshots/09.png"];
+    // let texture = TextureCache.imgAll;
+    //Create a rectangle object that defines the position and
+    //size of the sub-image you want to extract from the texture
+    //(`Rectangle` is an alias for `PIXI.Rectangle`)
+    let rectangle = new PIXI.Rectangle(0, 0, 30, 30);
+    //Tell the texture to use that rectangular section
+    texture.frame = rectangle;
+    //Create the sprite from the texture
+    let rocket = new PIXI.Sprite(texture);
+    //Position the rocket sprite on the canvas
+    // rocket.x = 32;
+    // rocket.y = 32;
+    rocket.position.set(50, 200)
+    //Add the rocket to the stage
+    app.stage.addChild(rocket);
+    //Render the stage   
+    app.renderer.render(app.stage);
+  }
+
+  function loadProgressHandler(loader, resource) {
+    //Display the file `url` currently being loaded
+    console.log("loading: " + resource.url);
+    //Display the percentage of files currently loaded
+    console.log("progress: " + loader.progress + "%");
+    //If you gave your files names as the first argument
+    //of the `add` method, you can access them like this
+    console.log("loading: " + resource.name);
+  }
+
+  function gameLoop(delta) {
+    //Update the current game state:
+    state(delta);
+  }
+
+  function play(delta) {
+
+    //Update the cat's velocity
+    cat.vx = .10;
+    cat.vy = 1;
+    //Apply the velocity values to the cat's
+    //position to make it move
+    cat.x += cat.vx;
+    cat.y += cat.vy;
+  }
+
+  function gameLoopTest(delta) {
+    //Move the cat 1 pixel
+    cat.x += 1;
+
+    //Optionally use the `delta` value
+    //cat.x += 1 + delta;
+  }
+
+  // 图片精灵
+  let preview;
+  // 置换图精灵
+  let displacementSprite;
+  // 滤镜
+  let displacementFilter;
+
+  function setScene(url) {
+
+    // 创建一个容器 
+    stage = new PIXI.Container();
+
+    // 根据图片的 url，创建图片精灵
+    preview = PIXI.Sprite.fromImage(url);
+
+    // 创建置换图精灵，在创建置换滤镜时会用到这个精灵 
+    displacementSprite = PIXI.Sprite.fromImage('https://www.kkkk1000.com/images/learnPixiJS/sprite.png');
+
+    // 设置置换图精灵为平铺模式
+    displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+
+    // 创建一个置换滤镜
+    displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
+
+    // 添加 图片精灵 到舞台
+    stage.addChild(preview);
+
+    // 添加 置换图精灵 到舞台 
+    stage.addChild(displacementSprite);
+
+    // 把 stage 添加到根容器上
+    app.stage.addChild(stage);
+  }
+</script>

@@ -1,0 +1,153 @@
+<!doctype html>
+<title>test-text&HH</title>
+<script src="https://pixijs.download/v4.5.5/pixi.min.js"></script>
+<style>
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+  }
+
+  #changeBtn {
+    position: absolute;
+    z-index: 200;
+    left: 300px;
+  }
+</style>
+
+<button id="changeBtn">改变</button>
+<div id="px-render"></div>
+<script type="text/javascript">
+  let type = "WebGL"
+  if (!PIXI.utils.isWebGLSupported()) {
+    type = "canvas"
+  }
+  PIXI.utils.sayHello(type)
+
+  let Sprite = PIXI.Sprite,
+    resources = PIXI.loader.resources,
+    application = PIXI.Application,
+    Graphics = PIXI.Graphics,
+    Text = PIXI.Text,
+    TextStyle = PIXI.TextStyle
+
+  // 创建一个 Pixi应用 需要的一些参数
+  let option = {
+    width: 256, // default: 800
+    height: 256, // default: 600
+    antialias: true, // default: false
+    transparent: false, // default: false
+    resolution: 1 // default: 1
+  }
+  // 画布
+  //Create a Pixi Application 创建一个 Pixi应用
+  let app = new application(option);
+
+  let playground = document.getElementById('px-render');
+  // 获取渲染器
+  let renderer = app.renderer;
+
+  renderer.backgroundColor = 0x061639;
+  renderer.view.style.position = "absolute";
+  renderer.view.style.display = "block";
+  renderer.autoResize = true;
+  renderer.resize(window.innerWidth, window.innerHeight);
+
+  // 把 Pixi 创建的 canvas 添加到页面上
+  playground.appendChild(renderer.view);
+
+  // 绘画
+  // 矩形
+  let rectangle = new Graphics();
+  rectangle.lineStyle(4, 0xFF3300, 1);
+  rectangle.beginFill(0x66CCFF);
+  rectangle.drawRect(0, 0, 64, 64);
+  rectangle.endFill();
+  rectangle.x = 170;
+  rectangle.y = 170;
+  app.stage.addChild(rectangle);
+
+  // 圆形
+  let circle = new Graphics();
+  circle.beginFill(0x9966FF);
+  circle.drawCircle(0, 0, 32);
+  circle.endFill();
+  circle.x = 64;
+  circle.y = 130;
+  app.stage.addChild(circle);
+
+  // 椭圆
+  let ellipse = new Graphics();
+  ellipse.beginFill(0xFFFF00);
+  ellipse.drawEllipse(0, 0, 50, 20);
+  ellipse.endFill();
+  ellipse.x = 180;
+  ellipse.y = 130;
+  app.stage.addChild(ellipse);
+
+  // 圆角矩形
+  let roundBox = new Graphics();
+  roundBox.lineStyle(4, 0x99CCFF, 1);
+  roundBox.beginFill(0xFF9933);
+  roundBox.drawRoundedRect(0, 0, 84, 36, 10)
+  roundBox.endFill();
+  roundBox.x = 48;
+  roundBox.y = 190;
+  app.stage.addChild(roundBox);
+
+  // 线段
+  let line = new Graphics();
+  line.lineStyle(4, 0xFFFFFF, 1);
+  line.moveTo(0, 0);
+  line.lineTo(80, 50);
+  line.x = 32;
+  line.y = 32;
+  app.stage.addChild(line);
+
+  // 多边形
+  let triangle = new Graphics();
+  triangle.beginFill(0x66FF33);
+  //Use `drawPolygon` to define the triangle as
+  //a path array of x/y positions
+  triangle.drawPolygon([
+    -32, 64, //First point
+    32, 64, //Second point
+    0, 0 //Third point
+  ]);
+  //Fill shape's color
+  triangle.endFill();
+  //Position the triangle after you've drawn it.
+  //The triangle's x/y position is anchored to its first point in the path
+  triangle.x = 180;
+  triangle.y = 22;
+  app.stage.addChild(triangle);
+
+  // 显示文本
+  let style = new TextStyle({
+    fontFamily: "Arial",
+    fontSize: 36,
+    fill: "white",
+    stroke: '#ff3300',
+    strokeThickness: 4,
+    dropShadow: true,
+    dropShadowColor: "#000000",
+    dropShadowBlur: 4,
+    dropShadowAngle: Math.PI / 6,
+    dropShadowDistance: 6,
+  });
+  let message = new Text("Hello Pixi!", style);
+  let textStyleChanged = {
+    fill: 0x99CCFF,
+    font: "16px PetMe64",
+    wordWrap: true,
+    wordWrapWidth: 100,
+    align: 'center'
+  }
+  message.position.set(400, 200);
+  // 后改变字体
+  document.getElementById("changeBtn").onclick = function () {
+    message.text = "Text changed!";
+    message.style = textStyleChanged;
+  }
+  app.stage.addChild(message);
+</script>
